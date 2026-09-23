@@ -2,7 +2,7 @@
 
 Cette image transcrit localement des fichiers audio, des vidéos, des dossiers de morceaux et des URL avec faster-whisper sur CPU. Elle regroupe les vidéos auto-découpées, attribue optionnellement les locuteurs avec resemblyzer et produit des rendus relisibles.
 
-Code source : https://github.com/cybergraphe-fr/transcription (licence MIT). Image prête à l'emploi : `registry.cybergraphe.fr/transcription:1.0.1`. Guide pas à pas pour un nouvel utilisateur : `TUTORIEL.md`. L'installation ne touche rien d'existant sur votre machine : voir la partie 2 du tutoriel.
+Code source : https://github.com/cybergraphe-fr/transcription (licence MIT). Image prête à l'emploi : `registry.cybergraphe.fr/transcription:1.0.2`. Guide pas à pas pour un nouvel utilisateur : `TUTORIEL.md`. L'installation ne touche rien d'existant sur votre machine : voir la partie 2 du tutoriel.
 
 ## Prérequis
 
@@ -12,17 +12,17 @@ Il faut Docker, une machine amd64 et idéalement 10 Go de RAM pour `large-v3`. L
 
 ```sh
 mkdir -p transcriptions
-docker pull registry.cybergraphe.fr/transcription:1.0.1
+docker pull registry.cybergraphe.fr/transcription:1.0.2
 docker volume create cybergraphe-transcription-cache
 ```
 
 ## Exemples
 
 ```sh
-docker run --rm -v "$PWD:/in:ro" -v "$PWD/transcriptions:/out" -v cybergraphe-transcription-cache:/cache registry.cybergraphe.fr/transcription:1.0.1 /in/reunion.m4a
-docker run --rm -v "$PWD:/in:ro" -v "$PWD/transcriptions:/out" -v cybergraphe-transcription-cache:/cache registry.cybergraphe.fr/transcription:1.0.1 /in/ray-ban/ -s auto --names '{"S1":"Alice","S2":"Bob"}'
-docker run --rm -v "$PWD:/in:ro" -v "$PWD/transcriptions:/out" -v cybergraphe-transcription-cache:/cache registry.cybergraphe.fr/transcription:1.0.1 'https://exemple.invalid/video'
-docker run --rm -v "$PWD:/in:ro" -v "$PWD/transcriptions:/out" -v cybergraphe-transcription-cache:/cache registry.cybergraphe.fr/transcription:1.0.1 /in/reunion.mp4 -s 2 -w
+docker run --rm -v "$PWD:/in:ro" -v "$PWD/transcriptions:/out" -v cybergraphe-transcription-cache:/cache registry.cybergraphe.fr/transcription:1.0.2 /in/reunion.m4a
+docker run --rm -v "$PWD:/in:ro" -v "$PWD/transcriptions:/out" -v cybergraphe-transcription-cache:/cache registry.cybergraphe.fr/transcription:1.0.2 /in/ray-ban/ -s auto --names '{"S1":"Alice","S2":"Bob"}'
+docker run --rm -v "$PWD:/in:ro" -v "$PWD/transcriptions:/out" -v cybergraphe-transcription-cache:/cache registry.cybergraphe.fr/transcription:1.0.2 'https://exemple.invalid/video'
+docker run --rm -v "$PWD:/in:ro" -v "$PWD/transcriptions:/out" -v cybergraphe-transcription-cache:/cache registry.cybergraphe.fr/transcription:1.0.2 /in/reunion.mp4 -s 2 -w
 ```
 
 Le fichier `.srt` produit contient les sous-titres. Les options utiles sont `-l fr|en|auto`, `-m large-v3|medium`, `-s N|auto`, `-t "titre"`, `-w`, `-g 120`, `--compute-type int8` et `--threads N`. Pour conserver l'interface courte, installe aussi `skill/transcrire.sh` dans un dossier de commandes.
@@ -30,7 +30,7 @@ Le fichier `.srt` produit contient les sous-titres. Les options utiles sont `-l 
 ## Installer le skill Claude Code
 
 ```sh
-docker run --rm -v ~/.claude/skills:/export registry.cybergraphe.fr/transcription:1.0.1 --export-skill /export/transcription
+docker run --rm -v ~/.claude/skills:/export registry.cybergraphe.fr/transcription:1.0.2 --export-skill /export/transcription
 ```
 
 ## Stack technique
@@ -51,7 +51,7 @@ Tout tourne sur CPU, dans un seul container, sans GPU ni service en ligne pendan
 
 Paramètres de transcription : faisceau de recherche (`beam_size`) 5, filtre de silence VAD activé, langue détectée automatiquement sauf option `-l`. Le container tourne sous un utilisateur non root (uid 1000) et le modèle est mis en cache dans le volume `/cache` (`HF_HOME`).
 
-Aucun modèle n'est dans l'image : le premier lancement télécharge `large-v3` (environ 3 Go) depuis Hugging Face, une seule fois. Ensuite, le seul trafic sortant possible est celui de yt-dlp quand vous donnez une URL. Vos fichiers audio et le texte produit ne quittent jamais la machine.
+Aucun modèle n'est dans l'image : le premier lancement télécharge `large-v3` (environ 3 Go) depuis Hugging Face, une seule fois. Ce téléchargement se fait sans compte ; Hugging Face renvoie alors un avertissement `You are sending unauthenticated requests to the HF Hub` que le client affiche tel quel. Il est sans conséquence. En cas de limite de débit (erreur 429, IP partagée), passez un jeton de lecture gratuit avec `-e HF_TOKEN=hf_…` ; le wrapper du skill transmet la variable `HF_TOKEN` de votre shell si elle existe. Ensuite, le seul trafic sortant possible est celui de yt-dlp quand vous donnez une URL. Vos fichiers audio et le texte produit ne quittent jamais la machine.
 
 Le pipeline, dans l'ordre : regroupement des fichiers auto-découpés (`group_parts.py`, horodatage du nom de fichier puis métadonnées), conversion ffmpeg, transcription faster-whisper, attribution optionnelle des locuteurs (resemblyzer + clustering + hauteur de voix), rendu Markdown, CSV, SRT, TXT et `segments.json`.
 

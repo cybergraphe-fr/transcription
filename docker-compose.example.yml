@@ -1,6 +1,6 @@
 services:
   transcription:
-    image: ${TRANSCRIPTION_IMAGE:-registry.cybergraphe.fr/transcription:1.0.1}
+    image: ${TRANSCRIPTION_IMAGE:-registry.cybergraphe.fr/transcription:1.0.2}
     profiles: ["transcription"]
     user: "${UID:-1000}:${GID:-1000}"
     volumes:

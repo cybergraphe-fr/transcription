@@ -3,7 +3,7 @@ FROM python:3.11-slim
 LABEL org.opencontainers.image.title="Transcription locale" \
       org.opencontainers.image.description="Transcription audio et vidéo locale avec faster-whisper et attribution optionnelle des locuteurs" \
       org.opencontainers.image.source="https://github.com/cybergraphe-fr/cybergraphe" \
-      org.opencontainers.image.version="1.0.1" \
+      org.opencontainers.image.version="1.0.2" \
       org.opencontainers.image.licenses="MIT"
 
 # Versions stables vérifiées le 17 septembre 2026 ; librosa 0.11.0 est la dernière version stable compatible avec Python 3.11, la 1.0.0 exige Python 3.12.

@@ -10,10 +10,10 @@ Ce skill s'invoque lorsqu'un fichier audio, une vidéo, une URL, un message voca
 ## Commande
 
 ```sh
-docker run --rm -v "$PWD:/in:ro" -v "$PWD/transcriptions:/out" -v cybergraphe-transcription-cache:/cache registry.cybergraphe.fr/transcription:1.0.1 /in/<fichier> -s auto
+docker run --rm -v "$PWD:/in:ro" -v "$PWD/transcriptions:/out" -v cybergraphe-transcription-cache:/cache registry.cybergraphe.fr/transcription:1.0.2 /in/<fichier> -s auto
 ```
 
-Passe plusieurs fichiers, un dossier ou une URL après le nom de l'image. Les options principales sont `-l fr|en|auto`, `-m large-v3|medium`, `-s N|auto`, `-t "titre"`, `-w`, `-g 120` et `--names '{"S1":"Alice","S2":"Bob"}'`. Le wrapper `transcrire.sh` du skill ajoute automatiquement les montages et l'UID courant.
+Passe plusieurs fichiers, un dossier ou une URL après le nom de l'image. Les options principales sont `-l fr|en|auto`, `-m large-v3|medium`, `-s N|auto`, `-t "titre"`, `-w`, `-g 120` et `--names '{"S1":"Alice","S2":"Bob"}'`. Le wrapper `transcrire.sh` du skill ajoute automatiquement les montages et l'UID courant, et transmet `HF_TOKEN` si la variable existe dans le shell. Au premier lancement, la ligne `Warning: You are sending unauthenticated requests to the HF Hub` vient du serveur Hugging Face pendant le téléchargement du modèle : informative, sans action à mener, elle disparaît une fois le modèle en cache ; un jeton n'est utile qu'en cas d'erreur 429.
 
 ## Vidéos auto-découpées
 

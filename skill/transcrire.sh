@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-IMAGE=${TRANSCRIPTION_IMAGE:-registry.cybergraphe.fr/transcription:1.0.1}
+IMAGE=${TRANSCRIPTION_IMAGE:-registry.cybergraphe.fr/transcription:1.0.2}
 ROOT=$(pwd)
 OUT=$ROOT/transcriptions
 PREVIOUS=
@@ -9,6 +9,6 @@ for ARG in "$@"; do
   case "$ARG" in -o|--out) PREVIOUS=out ;; --out=*) OUT=${ARG#*=} ;; esac
 done
 mkdir -p "$OUT"
-exec docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -w /in \
+exec docker run --rm --user "$(id -u):$(id -g)" -e HOME=/tmp -e HF_TOKEN -w /in \
   -v "$ROOT:/in:ro" -v "$OUT:/out" -v cybergraphe-transcription-cache:/cache \
   "$IMAGE" "$@" -o /out
