@@ -1,0 +1,5 @@
+nas/
+__pycache__/
+*.pyc
+*.tar
+.pytest_cache/

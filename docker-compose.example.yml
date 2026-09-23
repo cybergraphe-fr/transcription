@@ -1,0 +1,14 @@
+services:
+  transcription:
+    image: ${TRANSCRIPTION_IMAGE:-registry.cybergraphe.fr/transcription:1.0.1}
+    profiles: ["transcription"]
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - ./in:/in:ro
+      - ./out:/out
+      - cybergraphe-transcription-cache:/cache
+    command: ["/in/exemple.wav"]
+    restart: "no"
+
+volumes:
+  cybergraphe-transcription-cache:
